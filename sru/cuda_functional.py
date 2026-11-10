@@ -15,7 +15,8 @@ try:
     load(
         name="sru_cuda",
         sources=sources,
-        extra_cflags=['-O3'],
+        extra_cflags=['-O3', '-std=c++20'],
+        extra_cuda_cflags=['-std=c++20'],
         is_python_module=False,
         verbose=False
     )
