@@ -842,7 +842,7 @@ void sru_cuda_forward_simple(
     const int total = batch_size * hidden_size;
     const dim3 blocks( (total - 1) / threads + 1 );
 
-    AT_DISPATCH_FLOATING_TYPES_AND_HALF(U.type(), "sru_forward_cuda_simple", ([&] {
+    AT_DISPATCH_FLOATING_TYPES_AND_HALF(U.scalar_type(), "sru_forward_cuda_simple", ([&] {
         sru_cuda_forward_kernel_simple<scalar_t><<<blocks, threads>>>(
             h.data_ptr<scalar_t>(),
             c.data_ptr<scalar_t>(),
@@ -884,7 +884,7 @@ void sru_cuda_backward_simple(
     const int total = batch_size * hidden_size;
     const dim3 blocks( (total - 1) / threads + 1 );
 
-    AT_DISPATCH_FLOATING_TYPES_AND_HALF(U.type(), "sru_backward_cuda_simple", ([&] {
+    AT_DISPATCH_FLOATING_TYPES_AND_HALF(U.scalar_type(), "sru_backward_cuda_simple", ([&] {
         sru_cuda_backward_kernel_simple<scalar_t><<<blocks, threads>>>(
             grad_u.data_ptr<scalar_t>(),
             x.has_value() ? grad_x.data_ptr<scalar_t>() : NULL,
@@ -926,7 +926,7 @@ void sru_cuda_bi_forward_simple(
     const int total = batch_size * hidden_size * 2;
     const dim3 blocks( (total - 1) / threads + 1 );
 
-    AT_DISPATCH_FLOATING_TYPES_AND_HALF(U.type(), "sru_bi_forward_cuda_simple", ([&] {
+    AT_DISPATCH_FLOATING_TYPES_AND_HALF(U.scalar_type(), "sru_bi_forward_cuda_simple", ([&] {
         sru_cuda_bi_forward_kernel_simple<scalar_t><<<blocks, threads>>>(
             h.data_ptr<scalar_t>(),
             c.data_ptr<scalar_t>(),
@@ -968,7 +968,7 @@ void sru_cuda_bi_backward_simple(
     const int total = batch_size * hidden_size * 2;
     const dim3 blocks( (total - 1) / threads + 1 );
 
-    AT_DISPATCH_FLOATING_TYPES_AND_HALF(U.type(), "sru_bi_backward_cuda_simple", ([&] {
+    AT_DISPATCH_FLOATING_TYPES_AND_HALF(U.scalar_type(), "sru_bi_backward_cuda_simple", ([&] {
         sru_cuda_bi_backward_kernel_simple<scalar_t><<<blocks, threads>>>(
             grad_u.data_ptr<scalar_t>(),
             x.has_value() ? grad_x.data_ptr<scalar_t>() : NULL,
@@ -1014,7 +1014,7 @@ void sru_cuda_forward(
     const int total = batch_size * hidden_size;
     const dim3 blocks( (total - 1) / threads + 1 );
 
-    AT_DISPATCH_FLOATING_TYPES_AND_HALF(U.type(), "sru_forward_cuda", ([&] {
+    AT_DISPATCH_FLOATING_TYPES_AND_HALF(U.scalar_type(), "sru_forward_cuda", ([&] {
         sru_cuda_forward_kernel<scalar_t><<<blocks, threads>>>(
             h.data_ptr<scalar_t>(),
             c.data_ptr<scalar_t>(),
@@ -1058,7 +1058,7 @@ void sru_cuda_bi_forward(
     const int total = batch_size * hidden_size * 2;
     const dim3 blocks( (total - 1) / threads + 1 );
 
-    AT_DISPATCH_FLOATING_TYPES_AND_HALF(U.type(), "sru_bi_forward_cuda", ([&] {
+    AT_DISPATCH_FLOATING_TYPES_AND_HALF(U.scalar_type(), "sru_bi_forward_cuda", ([&] {
         sru_cuda_bi_forward_kernel<scalar_t><<<blocks, threads>>>(
             h.data_ptr<scalar_t>(),
             c.data_ptr<scalar_t>(),
@@ -1108,7 +1108,7 @@ void sru_cuda_backward(
     const int total = batch_size * hidden_size;
     const dim3 blocks( (total - 1) / threads + 1 );
 
-    AT_DISPATCH_FLOATING_TYPES_AND_HALF(U.type(), "sru_backward_cuda", ([&] {
+    AT_DISPATCH_FLOATING_TYPES_AND_HALF(U.scalar_type(), "sru_backward_cuda", ([&] {
         sru_cuda_backward_kernel<scalar_t><<<blocks, threads>>>(
             grad_u.data_ptr<scalar_t>(),
             x.has_value() ? grad_x.data_ptr<scalar_t>() : NULL,
@@ -1164,7 +1164,7 @@ void sru_cuda_bi_backward(
     const int total = batch_size * hidden_size * 2;
     const dim3 blocks( (total - 1) / threads + 1 );
 
-    AT_DISPATCH_FLOATING_TYPES_AND_HALF(U.type(), "sru_bi_backward_cuda", ([&] {
+    AT_DISPATCH_FLOATING_TYPES_AND_HALF(U.scalar_type(), "sru_bi_backward_cuda", ([&] {
         sru_cuda_bi_backward_kernel<scalar_t><<<blocks, threads>>>(
             grad_u.data_ptr<scalar_t>(),
             x.has_value() ? grad_x.data_ptr<scalar_t>() : NULL,
