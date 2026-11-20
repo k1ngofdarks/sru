@@ -517,30 +517,13 @@ std::vector<at::Tensor> sru_bi_backward(
     return {grad_u, grad_x, grad_wc, grad_bias, grad_init};
 }
 
-// This way of registing custom op is based on earlier PRs of Pytorch:
-// https://github.com/pytorch/pytorch/pull/28229
-// 
-// In Pytorch 1.6, the recommended way is to use TORCH_LIBRARY(), e.g.
-//
-//   TORCH_LIBRARY(sru_cpu, m) {
-//       m.def("cpu_forward", &cpu_forward);
-//       m.def("cpu_bi_forward", &cpu_bi_forward);
-//   }
-//
-// We choose this way for backward compatibility.
-static auto registory_fwd_v1 = 
-    torch::RegisterOperators("sru_cuda::sru_forward_simple", &sru_forward_simple);
-static auto registory_bwd_v1 = 
-    torch::RegisterOperators("sru_cuda::sru_backward_simple", &sru_backward_simple);
-static auto registory_bi_fwd_v1 = 
-    torch::RegisterOperators("sru_cuda::sru_bi_forward_simple", &sru_bi_forward_simple);
-static auto registory_bi_bwd_v1 = 
-    torch::RegisterOperators("sru_cuda::sru_bi_backward_simple", &sru_bi_backward_simple);
-static auto registory_fwd_v2 = 
-    torch::RegisterOperators("sru_cuda::sru_forward", &sru_forward);
-static auto registory_bwd_v2 = 
-    torch::RegisterOperators("sru_cuda::sru_backward", &sru_backward);
-static auto registory_bi_fwd_v2 = 
-    torch::RegisterOperators("sru_cuda::sru_bi_forward", &sru_bi_forward);
-static auto registory_bi_bwd_v2 = 
-    torch::RegisterOperators("sru_cuda::sru_bi_backward", &sru_bi_backward);
+TORCH_LIBRARY(sru_cuda, m) {
+    m.def("sru_forward_simple", torch::dispatch(c10::DispatchKey::CUDA, TORCH_FN(sru_forward_simple)));
+    m.def("sru_backward_simple", torch::dispatch(c10::DispatchKey::CUDA, TORCH_FN(sru_backward_simple)));
+    m.def("sru_bi_forward_simple", torch::dispatch(c10::DispatchKey::CUDA, TORCH_FN(sru_bi_forward_simple)));
+    m.def("sru_bi_backward_simple", torch::dispatch(c10::DispatchKey::CUDA, TORCH_FN(sru_bi_backward_simple)));
+    m.def("sru_forward", torch::dispatch(c10::DispatchKey::CUDA, TORCH_FN(sru_forward)));
+    m.def("sru_backward", torch::dispatch(c10::DispatchKey::CUDA, TORCH_FN(sru_backward)));
+    m.def("sru_bi_forward", torch::dispatch(c10::DispatchKey::CUDA, TORCH_FN(sru_bi_forward)));
+    m.def("sru_bi_backward", torch::dispatch(c10::DispatchKey::CUDA, TORCH_FN(sru_bi_backward)));
+}

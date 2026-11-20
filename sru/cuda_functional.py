@@ -34,6 +34,30 @@ except Exception as e:
         verbose=False
     )
 
+else:
+    def _fake_forward(u, x, weight_c, bias, init, mask_c, mask_pad,
+                      length, batch, hidden_size, *options):
+        """Describe forward outputs without accessing CUDA data."""
+        shape = (length, batch, init.shape[-1])
+        return [u.new_empty(shape), u.new_empty(shape)]
+
+    def _fake_backward(u, x, weight_c, bias, init, mask_c, mask_pad, c,
+                       grad_h, grad_last, length, batch, hidden_size, *options):
+        """Describe gradients for the simple and general CUDA kernels."""
+        shape = (2, batch, init.shape[-1])
+        grad_x = torch.empty_like(x) if x is not None else torch.empty(1)
+        is_custom = bool(options[-1]) if options else False
+        grad_wc = torch.empty_like(weight_c) if is_custom else u.new_empty(shape)
+        return [torch.empty_like(u), grad_x, grad_wc, u.new_empty(shape),
+                u.new_empty(init.shape)]
+
+    for _name in ("sru_forward", "sru_forward_simple",
+                  "sru_bi_forward", "sru_bi_forward_simple"):
+        torch.library.register_fake("sru_cuda::" + _name)(_fake_forward)
+    for _name in ("sru_backward", "sru_backward_simple",
+                  "sru_bi_backward", "sru_bi_backward_simple"):
+        torch.library.register_fake("sru_cuda::" + _name)(_fake_backward)
+
 
 @torch.jit.script
 def elementwise_recurrence_forward(
